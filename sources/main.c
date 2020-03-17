@@ -15,7 +15,7 @@ int main(const int argc, const char** args)
 
 	// panics when no filepath is given
 	if (argc == 1) 
-    {
+	{
         printf("Panic! expects filepath as first argument.\n");
         exit(-1);
     }
