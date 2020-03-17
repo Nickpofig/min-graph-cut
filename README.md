@@ -1,4 +1,4 @@
-# min_graph_cut
+# min-graph-cut
 The program is written on C language. Developed using VS Code IDE. 
 
 ### Input:  
