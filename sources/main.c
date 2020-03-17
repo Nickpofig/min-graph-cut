@@ -23,16 +23,20 @@ int main(const int argc, const char** args)
 	FILE* file = open_file(args[1]);
 
 	struct ProblemInstance instance = read_problem_instance_from(file);
-	//print_problem_instance(&instance);
-
+	
 	struct ProblemSolution solution = run_depth_first_search(&instance);
-	printf("Solution: { cut cost: %f, configuration:", solution.cost);
+
+	// outputs solution
+	printf("cut-cost %f solution", solution.cost);
 	for(int i = 0; i < solution.size; i++)
+	{
 		printf(" %d", solution.array[i]);
-	printf(" }\n");
+	}
 
 	free(solution.array);
 	free(instance.graph.edges);
+
+	printf("\n");
 }
 
 FILE* open_file(const char* file_path)
