@@ -1,8 +1,10 @@
 # min_graph_cut
 The program is written on C language. Developed using VS Code IDE. 
 
-Input: *file containing data about edges of the initial graph*. 
+### Input:  
+Value: *file containing data about edges of the initial graph*.
 
+Variables:
 - n - number of nodes
 - k - maximum node degree(for-now: does not affect porgram, but must be there)
 - a - number of nodes in one of the resulted graphs
@@ -13,9 +15,28 @@ Input: *file containing data about edges of the initial graph*.
 Format:
 * first line: `n k a`
 * next lines: `e0 e1 ew`
- 
+
+### Output:
+Value: *console message*
+
+Variables:
+- cut-cost - total weight of the cutted edges.
+- solution - binary sequence, 1/0 represents to which cut resulted graph it belongs. 
+
+Format:
+    `cut-cost <float number> solution <binary sequence>` 
+
+### Make
+
+Inlcudes a makefile. Type `make help` to get information about available options.
+
+### VS Code
+
+The project has been developed using VS Code IDE. Includes configurations in the `lanch.json` and `tasks.json` to debug, compile or test the program.   
+
+
 <details>
-    <summary> Example file </summary>
+    <summary> Example of an input file </summary>
 
 ```
 20 10 5
@@ -121,11 +142,3 @@ Format:
   18   19   0.7340
 ```
 </details>
-
-Output: *console message*
-
-- cut-cost - total weight of the cutted edges.
-- solution - binary sequence, 1/0 represents to which cut resulted graph it belongs. 
-
-Format:
-    `cut-cost <float number> solution <binary sequence>` 
