@@ -1,0 +1,27 @@
+{
+    "tasks": [
+        {
+            "label": "force build",
+            "type": "shell",
+            "command": "make new",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "build graph test",
+            "command": "gcc",
+            "args": [
+                "-g",
+                "-I${workspaceFolder}/includes",
+                "${workspaceFolder}/tests/test_graph.c",
+                "${workspaceFolder}/sources/graph.c",
+                "-o",
+                "${workspaceFolder}/builds/test_graph"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
