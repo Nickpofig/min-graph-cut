@@ -3,6 +3,8 @@
 
 struct ProblemSolution run_depth_first_search(const struct ProblemInstance* instance) 
 {
+    // cheking git...
+
     struct ProblemSolution best_solution = 
     {
         .array = malloc(sizeof(int) * instance->n),
