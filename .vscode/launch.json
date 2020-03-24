@@ -26,7 +26,7 @@
             "miDebuggerPath": "/usr/bin/gdb"
         },
         {
-            "name": "Build and debug the program",
+            "name": "Debug Sequential",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/builds/program",
@@ -43,7 +43,28 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "force build",
+            "preLaunchTask": "make new",
+            "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Debug OpenMP",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/builds/program",
+            "args": ["/home/rasul_seidagul/Education/CVUT/PDP/data/mhr_20_10_5.txt"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "make openmp",
             "miDebuggerPath": "/usr/bin/gdb"
         }
     ]

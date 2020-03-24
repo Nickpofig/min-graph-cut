@@ -1,9 +1,15 @@
 {
     "tasks": [
         {
-            "label": "force build",
+            "label": "make new",
             "type": "shell",
             "command": "make new",
+            "problemMatcher": []
+        },
+        {
+            "label": "make openmp",
+            "type": "shell",
+            "command": "make openmp",
             "problemMatcher": []
         },
         {

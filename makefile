@@ -40,6 +40,8 @@ GDBFLAG := -g
 
 all: $(PROGRAM)
 
+openmp: CFLAGS += -fopenmp
+openmp: clean  $(PROGRAM)
 
 new: clean 
 	$(CC) $(GDBFLAG) $(INCLUDE) $(SOURCES) -o $(PROGRAM)
@@ -54,7 +56,7 @@ test_%: $(filter-out %main.o,$(OBJECTS))
 	$(CC) $(INCLUDE) $(LDFLAGS) $^ $(TEST_DIRECTORY)/$@.c $(LDLIBS) -o $(BUILD_DIRECTORY)/$@
 
 $(PROGRAM): $(OBJECTS)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) $(CFLAGS) -o $@
 
 $(OBJECT_DIRECTORY)/%.o: $(SOURCE_DIRECTORY)/%.c $(INCLUDES) | $(OBJECT_DIRECTORY)
 	$(CC) $(INCLUDE) $(CFLAGS) -c $< -o $@

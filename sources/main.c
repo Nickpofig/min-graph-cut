@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
+#include <omp.h>
 
 #include "graph.h"
 #include "problem.h"
@@ -11,6 +13,12 @@ FILE* open_file(const char* file_path);
 
 int main(const int argc, const char** args)
 {
+	struct ProblemInstance instance;
+	struct ProblemSolution solution;
+	struct timespec start_time;
+	struct timespec end_time;
+	FILE* file;
+	
 	__logging_is_graph_cyclic = false;
 
 	// panics when no filepath is given
@@ -20,23 +28,37 @@ int main(const int argc, const char** args)
         exit(-1);
     }
 
-	FILE* file = open_file(args[1]);
+#if defined(_OPENMP)
+	printf("number of available threads: %d\n", omp_get_max_threads());
+#endif
 
-	struct ProblemInstance instance = read_problem_instance_from(file);
+	file = open_file(args[1]);
+
+	instance = read_problem_instance_from(file);
 	
-	struct ProblemSolution solution = run_depth_first_search(&instance);
+	clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+	solution = run_depth_first_search(&instance);
+	
+	clock_gettime(CLOCK_MONOTONIC, &end_time);
 
 	// outputs solution
-	printf("cut-cost %f solution", solution.cost);
+	printf("\ncut-cost %f solution", solution.cost);
 	for(int i = 0; i < solution.size; i++)
 	{
 		printf(" %d", solution.array[i]);
 	}
 
+	double ellapsed = (end_time.tv_sec - start_time.tv_sec);
+		   ellapsed += (end_time.tv_nsec - start_time.tv_nsec) / 1000000000.0;
+
+	printf
+	(
+		"\nruntime: %f milliseconds.\n", ellapsed
+	);
+
 	free(solution.array);
 	free(instance.graph.edges);
-
-	printf("\n");
 }
 
 FILE* open_file(const char* file_path)
