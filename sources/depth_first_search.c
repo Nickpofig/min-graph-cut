@@ -56,7 +56,12 @@ void do_depth_first_search
     struct ProblemSolution include_solution;
     struct ProblemSolution exclude_solution;
 
-    int thread = omp_get_thread_num(); 
+    int thread =
+    #if defined(_OPENMP)
+        omp_get_thread_num(); 
+    #else
+        0;
+    #endif
 
     printf("[%d] start.\n", thread);
 
@@ -169,5 +174,4 @@ void do_depth_first_search
     {
         do_depth_first_search(instance, best_solution, &exclude_solution, graph_capacity    , depth);
     }
-    printf("[%d] ends\n", thread);
 }
