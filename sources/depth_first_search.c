@@ -73,25 +73,27 @@ void do_depth_first_search
 
         printf("[%d] cost calculated.\n", thread);
 
-        // ~ ~ ~ future: atomic check
         if (best_solution->is_valid == false || 
             best_solution->cost > current_solution->cost) 
         {
             printf("[%d] try validate\n", thread);
 
-            validate_solution(current_solution, instance);
+            #pragma omp critical
+            {
+                // temporary allocates memory on the heap 
+                validate_solution(current_solution, instance);
+            }
             
             printf("[%d] valiadted\n", thread);
 
             if (current_solution->is_valid)
             {
                 printf("[%d] write best\n", thread);
-                // ~ ~ ~ future: atomic setd
+
                 #pragma omp critical 
                 {
-                    best_solution->cost = current_solution->cost;                
-                    
                     best_solution->is_valid = true;
+                    best_solution->cost = current_solution->cost;                
 
                     for (int i = 0; i < instance->n; i++) 
                     {
@@ -102,25 +104,15 @@ void do_depth_first_search
         }
 
         printf("[%d] try free\n", thread);
+        
         #pragma omp critical 
         {
             free(current_solution->array);
         }
+        
         printf("[%d] free complete\n", thread);
         return;
     }
-
-    // printf("\td: %d", depth);
-	// for(int i = 0; i < current_solution->size; i++)
-	// {
-    //     if (current_solution->array[i] == 1) { printf("!");}
-    //     else printf(".");
-	// }
-    // printf("\t");
-
-    #if defined(_OPENMP)
-        printf("thread: %d\n", omp_get_thread_num());
-    #endif
 
     printf("[%d] malloc sol.1\n", thread);
     #pragma omp critical 
