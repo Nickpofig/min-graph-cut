@@ -30,7 +30,7 @@ Format:
 
 Inlcudes a makefile. Type `make help` to get information about available options.
 
-### VS Code
+### Visual Studio Code
 
 Includes configurations in the `lanch.json` and `tasks.json` to debug, compile, and test the program.   
 
