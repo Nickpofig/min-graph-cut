@@ -12,25 +12,27 @@ struct ProblemSolution run_depth_first_search(const struct ProblemInstance* inst
         .size = instance->n,
         .cost = 0,
         .is_valid = false,
-    }; 
+    };
 
     // would be deallocated by do_depth_first_search
-    struct ProblemSolution blank_solution = 
-    {
-        .array = malloc(sizeof(int) * instance->n),
-        .size = instance->n,
-        .cost = 0,
-        .is_valid = false,
-    };
+    struct ProblemSolution* blank_solution = malloc(sizeof(struct ProblemSolution));
+    
+    blank_solution->array = malloc(sizeof(int) * instance->n);
+    blank_solution->size = instance->n;
+    blank_solution->cost = 0;
+    blank_solution->is_valid = false;
 
     for (int i = 0; i < instance->n; i++) 
     {
-        blank_solution.array[i] = 0;
+        blank_solution->array[i] = 0;
     }
 
     #pragma omp parallel
     {
-        do_depth_first_search(instance, &best_solution, &blank_solution, instance->a, 0);
+        #pragma omp single 
+        {
+            do_depth_first_search(instance, &best_solution, blank_solution, instance->a, 0);
+        }
     }
     #pragma omp barrier
 
@@ -53,8 +55,8 @@ void do_depth_first_search
     int depth
 )
 {
-    struct ProblemSolution include_solution;
-    struct ProblemSolution exclude_solution;
+    struct ProblemSolution* include_solution;
+    struct ProblemSolution* exclude_solution;
 
     int thread =
     #if defined(_OPENMP)
@@ -63,35 +65,22 @@ void do_depth_first_search
         0;
     #endif
 
-    printf("[%d] start.\n", thread);
+    printf("[%d] do-dps:depth(%d)\n", thread, depth);
 
     if (graph_capacity == 0 || depth == instance->n) 
     {
-        printf("[%d] try calculate cost.\n", thread);
-
         calculate_cut_cost(current_solution, instance);
-
-        printf("[%d] cost calculated.\n", thread);
 
         if (best_solution->is_valid == false || 
             best_solution->cost > current_solution->cost) 
         {
-            printf("[%d] try validate\n", thread);
-
             #pragma omp critical
             {
                 // temporary allocates memory on the heap 
                 validate_solution(current_solution, instance);
-            }
-            
-            printf("[%d] valiadted\n", thread);
 
-            if (current_solution->is_valid)
-            {
-                printf("[%d] write best\n", thread);
-
-                #pragma omp critical 
-                {
+                if (current_solution->is_valid)
+                {                
                     best_solution->is_valid = true;
                     best_solution->cost = current_solution->cost;                
 
@@ -99,71 +88,60 @@ void do_depth_first_search
                     {
                         best_solution->array[i] = current_solution->array[i];
                     }
-                }                
+                }
             }
         }
-
-        printf("[%d] try free\n", thread);
         
         #pragma omp critical 
         {
             free(current_solution->array);
+            free(current_solution);
         }
         
-        printf("[%d] free complete\n", thread);
         return;
     }
 
-    printf("[%d] malloc sol.1\n", thread);
     #pragma omp critical 
     {
-        include_solution = (struct ProblemSolution)
-        {
-            .array = malloc(sizeof(int) * instance->n),
-            .size = instance->n,
-            .cost = 0,
-            .is_valid = false
-        };
+        include_solution = malloc(sizeof(struct ProblemSolution));
+        include_solution->array = malloc(sizeof(int) * instance->n);
+        include_solution->size = instance->n;
+        include_solution->cost = 0;
+        include_solution->is_valid = false;
     }
 
-    printf("[%d] malloc sol.2\n", thread);
     #pragma omp critical 
     {
-        exclude_solution = (struct ProblemSolution)
-        {
-            .array = malloc(sizeof(int) * instance->n),
-            .size = instance->n,
-            .cost = 0,
-            .is_valid = false
-        };
+        exclude_solution = malloc(sizeof(struct ProblemSolution));
+        exclude_solution->array = malloc(sizeof(int) * instance->n);
+        exclude_solution->size = instance->n;
+        exclude_solution->cost = 0;
+        exclude_solution->is_valid = false;
     }
 
-    printf("[%d] write sols\n", thread);
     for (int i = 0; i < instance->n; i++) 
     {
-        include_solution.array[i] = current_solution->array[i];
-        exclude_solution.array[i] = current_solution->array[i];
+        include_solution->array[i] = current_solution->array[i];
+        exclude_solution->array[i] = current_solution->array[i];
     }
 
-    printf("[%d] free parent sol\n", thread);
     #pragma omp critical 
     {
         free(current_solution->array);
+        free(current_solution);
     }
 
-    include_solution.array[depth] = 1;
-    exclude_solution.array[depth] = 0;
+    include_solution->array[depth] = 1;
+    exclude_solution->array[depth] = 0;
 
     depth++;
 
-    printf("[%d] search left\n", thread);
     #pragma omp task
     {
-        do_depth_first_search(instance, best_solution, &include_solution, graph_capacity - 1, depth);
+        do_depth_first_search(instance, best_solution, include_solution, graph_capacity - 1, depth);
     }
-    printf("[%d] search right\n", thread);
     #pragma omp task 
     {
-        do_depth_first_search(instance, best_solution, &exclude_solution, graph_capacity    , depth);
+        do_depth_first_search(instance, best_solution, exclude_solution, graph_capacity    , depth);
     }
 }
