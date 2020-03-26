@@ -1,5 +1,5 @@
 # min-graph-cut
-The program is written on C language. Developed using VS Code IDE. 
+The program is written on C language, uses OpenMP for the parallelization. Developed in the Visual Studio Code. 
 
 ### Input:  
 Value: *file containing data about edges of the initial graph*.
