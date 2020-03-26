@@ -34,7 +34,6 @@ struct ProblemSolution run_depth_first_search(const struct ProblemInstance* inst
             do_depth_first_search(instance, &best_solution, blank_solution, instance->a, 0);
         }
     }
-    #pragma omp barrier
 
     if (best_solution.is_valid == false) 
     {
