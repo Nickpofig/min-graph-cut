@@ -32,7 +32,7 @@ Inlcudes a makefile. Type `make help` to get information about available options
 
 ### VS Code
 
-The project has been developed using VS Code IDE. Includes configurations in the `lanch.json` and `tasks.json` to debug, compile or test the program.   
+Includes configurations in the `lanch.json` and `tasks.json` to debug, compile, and test the program.   
 
 
 <details>
