@@ -1,5 +1,5 @@
 # min-graph-cut
-The program is written on C language. Developed using VS Code IDE. 
+The program is written on C language, uses OpenMP for the parallelization. Developed in the Visual Studio Code. 
 
 ### Input:  
 Value: *file containing data about edges of the initial graph*.
@@ -30,9 +30,9 @@ Format:
 
 Inlcudes a makefile. Type `make help` to get information about available options.
 
-### VS Code
+### Visual Studio Code
 
-The project has been developed using VS Code IDE. Includes configurations in the `lanch.json` and `tasks.json` to debug, compile or test the program.   
+Includes configurations in the `lanch.json` and `tasks.json` to debug, compile, and test the program.   
 
 
 <details>
