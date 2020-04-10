@@ -7,6 +7,7 @@
 #include "graph.h"
 #include "problem.h"
 #include "depth_first_search.h"
+#include "gather_and_search_approach.h"
 
 FILE* open_file(const char* file_path);
 
@@ -24,7 +25,7 @@ int main(const int argc, const char** args)
 	// panics when no filepath is given
 	if (argc == 1) 
 	{
-        printf("Panic! expects filepath as first argument.\n");
+        printf("Panic! expects filepath as second argument.\n");
         exit(-1);
     }
 
@@ -38,16 +39,23 @@ int main(const int argc, const char** args)
 	
 	clock_gettime(CLOCK_MONOTONIC, &start_time);
 
-	solution = run_depth_first_search(&instance);
+	// solution = run_recursive_depth_first_search(&instance);
+	solution = gather_states_and_search_best_solution(instance, 1000);
 	
 	clock_gettime(CLOCK_MONOTONIC, &end_time);
 
 	// outputs solution
-	printf("\ncut-cost %f solution", solution.cost);
+	printf("\n\tinstance { n: %d, a: %d, k: %d}", 
+		instance.n, 
+		instance.a, 
+		instance.k
+	);
+	printf("\n\tsolution { cut-cost: %f, solution: ", solution.cost);
 	for(int i = 0; i < solution.size; i++)
 	{
 		printf(" %d", solution.array[i]);
 	}
+	printf("}");
 
 	double ellapsed = (end_time.tv_sec - start_time.tv_sec);
 		   ellapsed += (end_time.tv_nsec - start_time.tv_nsec) / 1000000000.0;

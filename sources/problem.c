@@ -257,6 +257,39 @@ void calculate_cut_cost
     solution->cost = cost;
 }
 
+void deeply_copy_solution
+(
+    const struct ProblemSolution* from,
+    struct ProblemSolution* into 
+) 
+{
+    into->cost = from->cost;
+    into->is_valid = from->is_valid;
+    into->size = from->size;
+
+    for (int i = 0; i < from->size; i++) 
+    {
+        into->array[i] = from->array[i];
+    }
+}
+
+struct ProblemSolution* malloc_solution(int size, int* array)
+{
+    struct ProblemSolution* solution = malloc(sizeof(struct ProblemSolution));
+    
+    solution->size = size;
+    solution->cost = 0;
+    solution->is_valid = false;
+    solution->array = array == NULL ? malloc(sizeof(int) * size) : array; 
+
+    for (int i = 0; i < size; i++) 
+    {
+        solution->array[i] = 0;
+    }
+
+    return solution;
+}
+
 void print_problem_instance(const struct ProblemInstance* instance) 
 {
     printf
@@ -283,4 +316,19 @@ void print_problem_solution(const struct ProblemSolution* solution)
         printf("%d", solution->array[i]);
     }
     printf("])");
+}
+
+void minimally_print_problem_solution(const struct ProblemSolution* solution)
+{
+    int a = 0;
+    for (int i = 0; i < solution->size; i++) 
+    {
+        if (solution->array[i] == 1)
+        {
+            a++;
+            printf("!");
+        }
+        else printf(".");
+    }
+    printf("[%d]", a);
 }

@@ -6,7 +6,9 @@
 	],
 	"settings": {
 		"files.associations": {
-			"time.h": "c"
+			"time.h": "c",
+			"type_traits": "c",
+			"typeinfo": "c"
 		}
 	}
 }

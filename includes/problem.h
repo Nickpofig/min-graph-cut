@@ -29,6 +29,8 @@ struct ProblemSolution
 
 struct ProblemInstance read_problem_instance_from(FILE *file);
 
+struct ProblemSolution* malloc_solution(int size, int* array);
+
 void validate_solution(
     struct ProblemSolution* solution,
     const struct ProblemInstance* instance
@@ -39,7 +41,14 @@ void calculate_cut_cost(
     const struct ProblemInstance* instance
 );
 
+void deeply_copy_solution
+(
+    const struct ProblemSolution* from,
+    struct ProblemSolution* into 
+);
+
 void print_problem_instance(const struct ProblemInstance* instance);
 void print_problem_solution(const struct ProblemSolution* solution);
+void minimally_print_problem_solution(const struct ProblemSolution* solution);
 
 #endif // ends header guard

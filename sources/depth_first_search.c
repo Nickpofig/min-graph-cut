@@ -4,7 +4,7 @@
 #include "problem.h"
 #include "depth_first_search.h"
 
-struct ProblemSolution run_depth_first_search(const struct ProblemInstance* instance) 
+struct ProblemSolution run_recursive_depth_first_search(const struct ProblemInstance* instance) 
 {
     struct ProblemSolution best_solution = 
     {
@@ -31,7 +31,7 @@ struct ProblemSolution run_depth_first_search(const struct ProblemInstance* inst
     {
         #pragma omp single 
         {
-            do_depth_first_search(instance, &best_solution, blank_solution, instance->a, 0);
+            do_recursive_depth_first_search(instance, &best_solution, blank_solution, instance->a, 0);
         }
     }
 
@@ -45,7 +45,7 @@ struct ProblemSolution run_depth_first_search(const struct ProblemInstance* inst
     return best_solution;
 }
 
-void do_depth_first_search
+void do_recursive_depth_first_search
 (
     const struct ProblemInstance* instance,
     struct ProblemSolution* best_solution, 
@@ -116,11 +116,11 @@ void do_depth_first_search
 
     #pragma omp task
     {
-        do_depth_first_search(instance, best_solution, include_solution, graph_capacity - 1, depth);
+        do_recursive_depth_first_search(instance, best_solution, include_solution, graph_capacity - 1, depth);
     }
 
     #pragma omp task 
     {
-        do_depth_first_search(instance, best_solution, exclude_solution, graph_capacity    , depth);
+        do_recursive_depth_first_search(instance, best_solution, exclude_solution, graph_capacity    , depth);
     }
 }
