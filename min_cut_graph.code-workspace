@@ -8,7 +8,12 @@
 		"files.associations": {
 			"time.h": "c",
 			"type_traits": "c",
-			"typeinfo": "c"
+			"typeinfo": "c",
+			"gather_and_search_approach.h": "c",
+			"omp.h": "c",
+			"problem.h": "c",
+			"stdlib.h": "c",
+			"bignumbers.h": "c"
 		}
 	}
 }

@@ -17,7 +17,7 @@ struct LinearStateSpace
     int index;
 };
 
-struct ProblemSolution gather_states_and_search_best_solution
+struct ProblemSolution search_best_solution_using_iterational_dps
 (
     const struct ProblemInstance instance, 
     const int state_space_capacity

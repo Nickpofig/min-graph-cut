@@ -40,8 +40,9 @@ GDBFLAG := -g
 
 all: $(PROGRAM)
 
-openmp: CFLAGS += -fopenmp
-openmp: clean  $(PROGRAM)
+parallel: CC := mpicc
+parallel: CFLAGS += -fopenmp
+parallel: clean  $(PROGRAM)
 
 new: clean 
 	$(CC) $(GDBFLAG) $(INCLUDE) $(SOURCES) -o $(PROGRAM)

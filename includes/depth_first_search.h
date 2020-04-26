@@ -1,6 +1,7 @@
 // begins header guard
 #ifndef __include_depth_first_search
 #define __include_depth_first_search
+//
 
 #include "problem.h"
 

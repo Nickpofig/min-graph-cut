@@ -3,11 +3,13 @@
 #include <stdbool.h>
 #include <time.h>
 #include <omp.h>
+#include <mpi.h>
 
 #include "graph.h"
 #include "problem.h"
 #include "depth_first_search.h"
 #include "gather_and_search_approach.h"
+#include "mpi_approach.h"
 
 FILE* open_file(const char* file_path);
 
@@ -39,9 +41,70 @@ int main(const int argc, const char** args)
 	
 	clock_gettime(CLOCK_MONOTONIC, &start_time);
 
-	// solution = run_recursive_depth_first_search(&instance);
-	solution = gather_states_and_search_best_solution(instance, 1000);
+	MPI_Init(&argc, &args);
 	
+	// * recursive OMP approach
+	// solution = run_recursive_depth_first_search(&instance);
+	
+	// * recursive and data parallelism OMP approach  
+	// solution = search_best_solution_using_iterational_dps(instance, 4000);
+	
+	// * mpi and omp approach
+	solution = run_mpi_omp_iterative_brute_force(instance, 10000000);
+
+	// declares master buffers to recieve data from slaves
+	int* solutions = NULL;
+	float* costs = NULL;
+
+	// gets process id and count
+	int process_id = 0;
+	int process_count = 0;
+	MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
+	MPI_Comm_size(MPI_COMM_WORLD, &process_count);
+
+	if (process_id == 0) 
+	{
+		solutions = malloc(sizeof(int) * instance.n * process_count);
+		costs = malloc(sizeof(float) * process_count);
+	}
+
+	// gathers solution of each process 
+	// to the master solution buffer
+	MPI_Gather
+	(
+		&solution.array, instance.n, MPI_INT, 
+		&solutions, instance.n, MPI_INT, 
+		0, MPI_COMM_WORLD
+	);
+
+	// gathers cost of each process 
+	// to the master cost buffer
+	MPI_Gather
+	(
+		&solution.cost, 1, MPI_INT, 
+		&costs, 1, MPI_INT, 
+		0, MPI_COMM_WORLD
+	);
+
+	// clears each slave process solution memory
+	if (process_id != 0) free(solution.array);
+	MPI_Finalize();
+
+	for (int i = 0; i < process_count; i++) 
+	{
+		if (costs[i] > solution.cost) 
+		{
+			solution.cost = costs[i];
+			for (int j = 0, offset = i * instance.n; j < instance.n; j++) 
+			{
+				solution.array[j] = solutions[j + offset];
+			}
+		}
+	}
+
+	free(solutions);
+	free(costs);
+
 	clock_gettime(CLOCK_MONOTONIC, &end_time);
 
 	// outputs solution

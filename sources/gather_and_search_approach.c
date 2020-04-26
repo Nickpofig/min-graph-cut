@@ -1,12 +1,13 @@
 #include "gather_and_search_approach.h"
+#include <mpi.h>
 
-struct ProblemSolution gather_states_and_search_best_solution
+struct ProblemSolution search_best_solution_using_iterational_dps
 (
     const struct ProblemInstance instance, 
     const int state_space_capacity
 )
 {
-    // allocate state space
+    // allocates state space
     struct LinearStateSpace space = 
     {
         .instance = instance,
@@ -43,8 +44,6 @@ struct ProblemSolution gather_states_and_search_best_solution
         .is_valid = false,
         .cost = 0
     };
-
-    printf("start");
 
     // start search for the best solution
     build_states_and_select_best_of_them_recursivly
