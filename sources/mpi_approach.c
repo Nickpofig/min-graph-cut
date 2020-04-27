@@ -12,6 +12,7 @@ struct ProblemSolution run_mpi_omp_iterative_brute_force
     unsigned long iteration_size 
 )
 {
+    // asserts iteration size is valid
     if (iteration_size == 0) 
     {
         printf("Error! iteration size could not be zero!");
@@ -68,23 +69,21 @@ struct ProblemSolution run_mpi_omp_iterative_brute_force
     unsigned int* start_state = alloc_big_natural_number(state_memory_blocks, 0); 
     
     unsigned int iteration_step_value = iteration_size / process_count;
+    
     // the last process handles excess of states
-    if 
-    (
-        (process_id == process_count - 1) && 
-        (iteration_size % process_count != 0)
-    ) 
+    if( (process_id == process_count - 1) && 
+        (iteration_size % process_count != 0)) 
     {
         iteration_step_value += iteration_size - iteration_step_value * process_count;
     }
+
     // defines how much it should add to the start state
     // at the end of this process iteration 
     unsigned int* iteration_step = alloc_big_natural_number(state_memory_blocks, iteration_step_value);
     const int thread_count = omp_get_max_threads();
     int search_complete_signal = 0;
 
-    while
-    (   
+    while(   
         compare_big_natural_numbers
         (
             start_state, state_memory_blocks, 
@@ -137,6 +136,7 @@ struct ProblemSolution run_mpi_omp_iterative_brute_force
             for (int i = 0, a; i < thread_iteration_steps; i++) 
             {
                 a = 4;
+
                 for (int j = 0, b = 0; j < instance.n; j++) 
                 {
                     if (j % sizeof(unsigned int) == 0) 
@@ -153,10 +153,22 @@ struct ProblemSolution run_mpi_omp_iterative_brute_force
                     }
                     else temp_solution.array[j] = 0;
                 }
-                if (a > 0) continue;
+
+                if (a > 0)
+                {
+                    // moves to the next state
+                    add_value_to_big_natural_number
+                    (
+                        thread_state, state_memory_blocks, 1
+                    );
+                    continue;
+                }
+
+                print_big_natural_number(thread_state, state_memory_blocks);
 
                 // validates state
                 validate_solution(&temp_solution, &instance);
+                
                 if (temp_solution.is_valid) 
                 {
                     // calculates cost

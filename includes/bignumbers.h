@@ -7,14 +7,12 @@
 
 unsigned int* alloc_big_natural_number
 (
-    int blocks, 
-    unsigned long initial_value
+    int blocks, unsigned long initial_value
 );
 
 unsigned int* alloc_big_natural_number_from_power
 (
-    int blocks, 
-    int power
+    int blocks, int power
 );
 
 unsigned int* alloc_big_natural_number_from
@@ -51,6 +49,12 @@ int compare_big_natural_numbers
     unsigned int first_length,
     const unsigned int* second,
     unsigned int second_length
+);
+
+void print_big_natural_number
+(
+    unsigned int* number, 
+    unsigned int blocks
 );
 
 #endif // ends header guard

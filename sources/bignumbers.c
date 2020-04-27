@@ -15,8 +15,7 @@ unsigned int* alloc_big_natural_number(int blocks, unsigned long initial_value)
     unsigned int block_offset = sizeof(unsigned int) * 8;
     unsigned int shifted_value = initial_value;
     
-    shifted_value = shifted_value << block_offset;
-    shifted_value = shifted_value >> block_offset;
+    shifted_value = (shifted_value << block_offset) >> block_offset;
     
     number[0] = shifted_value;
 
@@ -207,4 +206,20 @@ int compare_big_natural_numbers
     }
 
     return 0;   
+}
+
+void print_big_natural_number
+(
+    unsigned int* number, 
+    unsigned int blocks
+) 
+{
+    for (int i = blocks - 1; i >= 0; i++) 
+    {
+        for (int bit = 1 << ((sizeof(unsigned int) * 8) - 1); bit > 0; bit = bit >> 1)
+        {
+            if (number[i] & bit) printf("1");
+            else printf("0");
+        }
+    }
 }

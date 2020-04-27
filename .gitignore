@@ -1,0 +1,9 @@
+# files
+
+.vscode/launch.json
+.vscode/tasks.json
+
+# folders
+
+builds
+objects
