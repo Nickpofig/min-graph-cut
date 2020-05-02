@@ -1,7 +1,5 @@
 #include "graph.h"
 
-bool __logging_is_graph_cyclic = false;
-
 bool is_graph_cyclic(const struct Graph* graph) 
 {
     // when the graph has no edges
@@ -62,11 +60,11 @@ bool is_graph_cyclic(const struct Graph* graph)
     search_stack.end++;
 
     // logs..
-    if (__logging_is_graph_cyclic) 
-    {
-        printf("[actions: push(>>) pop(<<) skip(--) search(++) unknow(!!) ]\n");
-        printf(">>%d  ", graph->nodes[0]);
-    }
+    // if (__logging_is_graph_cyclic) 
+    // {
+    //     printf("[actions: push(>>) pop(<<) skip(--) search(++) unknow(!!) ]\n");
+    //     printf(">>%d  ", graph->nodes[0]);
+    // }
 
     int current_node;
 
@@ -77,10 +75,10 @@ bool is_graph_cyclic(const struct Graph* graph)
         current_node = search_stack.pointer[search_stack.end];
 
         // logs...
-        if (__logging_is_graph_cyclic) 
-        {
-            printf("<<%d  ", current_node);
-        }
+        // if (__logging_is_graph_cyclic) 
+        // {
+        //     printf("<<%d  ", current_node);
+        // }
 
         // skips the node 
         // when it has been checked 
@@ -91,10 +89,10 @@ bool is_graph_cyclic(const struct Graph* graph)
                 if (check_list[i].value == true) 
                 {
                     // logs...
-                    if (__logging_is_graph_cyclic) 
-                    {
-                        printf("--%d  ", current_node);
-                    }
+                    // if (__logging_is_graph_cyclic) 
+                    // {
+                    //     printf("--%d  ", current_node);
+                    // }
 
                     goto END_SEARCH;
                 }
@@ -104,10 +102,10 @@ bool is_graph_cyclic(const struct Graph* graph)
                     check_list[i].value = true;
                     
                     // logs...
-                    if (__logging_is_graph_cyclic) 
-                    {
-                        printf("++%d  ", current_node);
-                    }
+                    // if (__logging_is_graph_cyclic) 
+                    // {
+                    //     printf("++%d  ", current_node);
+                    // }
 
                     goto BEGIN_SEARCH;
                 }
@@ -115,10 +113,10 @@ bool is_graph_cyclic(const struct Graph* graph)
         }
 
         // logs...
-        if (__logging_is_graph_cyclic) 
-        {
-            printf("!!%d  ", current_node);
-        }
+        // if (__logging_is_graph_cyclic) 
+        // {
+        //     printf("!!%d  ", current_node);
+        // }
 
         goto END_SEARCH;
 
@@ -152,10 +150,10 @@ bool is_graph_cyclic(const struct Graph* graph)
             }
 
             // logs...
-            if (__logging_is_graph_cyclic) 
-            {
-                printf(">>%d  ", node);
-            }
+            // if (__logging_is_graph_cyclic) 
+            // {
+            //     printf(">>%d  ", node);
+            // }
         }
         END_SEARCH:;
     }
@@ -173,11 +171,11 @@ bool is_graph_cyclic(const struct Graph* graph)
     }
 
     // logs...
-    if (__logging_is_graph_cyclic) 
-    {
-        if (final_check) printf("....yes\n");
-        else printf("....no\n");
-    }
+    // if (__logging_is_graph_cyclic) 
+    // {
+    //     if (final_check) printf("....yes\n");
+    //     else printf("....no\n");
+    // }
 
     free(check_list);
     free(search_stack.pointer);

@@ -13,6 +13,12 @@
             "problemMatcher": []
         },
         {
+            "label": "make parallel",
+            "type": "shell",
+            "command": "make parallel",
+            "problemMatcher": []
+        },
+        {
             "type": "shell",
             "label": "build graph test",
             "command": "gcc",

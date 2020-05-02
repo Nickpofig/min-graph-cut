@@ -31,24 +31,19 @@ INCLUDES := $(wildcard $(INCLUDE_DIRECTORY)/*.h)
 TESTS := $(wildcard $(TEST_DIRECTORY)/%.c)
 
 INCLUDE := -I$(INCLUDE_DIRECTORY)
-CFLAGS  := -Wall
+CFLAGS  := -Wall -g
 LDFLAGS := -Llib
 LDLIBS  := -lm
-GDBFLAG := -g
+DEFINES := 
 
 .PHONY: all clean
 
-all: $(PROGRAM)
-
-parallel: CC := mpicc
-parallel: CFLAGS += -fopenmp
-parallel: clean  $(PROGRAM)
-
-new: clean 
-	$(CC) $(GDBFLAG) $(INCLUDE) $(SOURCES) -o $(PROGRAM)
-
 help:
 	@echo "available commands:\n * all\n * help\n * test-info\n * test_<any>\n * clean"
+
+parallel: CC := mpicc 
+parallel: CFLAGS += -fopenmp 
+parallel: clean $(PROGRAM)
 
 test-info: 
 	@echo "$(subst $(TEST_DIRECTORY)/, * ,$(subst $()  $(),\n,$(subst .c, ,$(wildcard $(TEST_DIRECTORY)/*.c))))"
@@ -57,7 +52,7 @@ test_%: $(filter-out %main.o,$(OBJECTS))
 	$(CC) $(INCLUDE) $(LDFLAGS) $^ $(TEST_DIRECTORY)/$@.c $(LDLIBS) -o $(BUILD_DIRECTORY)/$@
 
 $(PROGRAM): $(OBJECTS)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) $(CFLAGS) -o $@
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) $(CFLAGS) $(DEFINES) -o $@
 
 $(OBJECT_DIRECTORY)/%.o: $(SOURCE_DIRECTORY)/%.c $(INCLUDES) | $(OBJECT_DIRECTORY)
 	$(CC) $(INCLUDE) $(CFLAGS) -c $< -o $@

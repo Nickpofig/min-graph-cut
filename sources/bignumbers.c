@@ -11,6 +11,9 @@ unsigned int* alloc_big_natural_number(int blocks, unsigned long initial_value)
     }
 
     unsigned int* number = malloc(blocks * sizeof(unsigned int));
+    
+    // Initializes number value 
+    for (int i = 0; i < blocks; i++) number[i] = 0;
 
     unsigned int block_offset = sizeof(unsigned int) * 8;
     unsigned int shifted_value = initial_value;
@@ -41,19 +44,25 @@ unsigned int* alloc_big_natural_number_from_power(int blocks, int power)
     }
 
     unsigned int* number = malloc(blocks * sizeof(unsigned int));
+    int bits_per_block = sizeof(unsigned int) * 8;
+    int i, power_blocks = power / bits_per_block;
 
-    for (int i = 0; i < blocks; i++) 
+    for (i = 0; i < power_blocks; i++) 
     {
         number[i] = ~0;
     }
 
-    unsigned int shift = (blocks * sizeof(unsigned int)) - power;
-
-    if (shift > 0) 
+    if (i < blocks) 
     {
-        number[blocks - 1] = (number[blocks - 1] << shift) >> shift;
+        number[i] = ~0;
+        number[i] = number[i] >> (bits_per_block - (power - (power_blocks * bits_per_block)));
     }
 
+    for (i = i + 1; i < blocks; i++) 
+    {
+        number[i] = 0;
+    }
+    
     return number;
 }
 
@@ -121,7 +130,7 @@ bool add_value_to_big_natural_number
 
     for (unsigned int i = 0; i < number_blocks; i++) 
     {
-        block_value = (unsigned long)number[i] + (unsigned long)value;
+        block_value = number[i] + value;
         if (block_value > max) 
         {
             number[i] = 0;
@@ -203,6 +212,7 @@ int compare_big_natural_numbers
     {
         if (first[i] > second[i]) return 1;
         else if (first[i] < second[i]) return -1;
+        i--;
     }
 
     return 0;   
@@ -214,12 +224,12 @@ void print_big_natural_number
     unsigned int blocks
 ) 
 {
-    for (int i = blocks - 1; i >= 0; i++) 
+    for (int i = blocks - 1; i >= 0; i--) 
     {
-        for (int bit = 1 << ((sizeof(unsigned int) * 8) - 1); bit > 0; bit = bit >> 1)
+        for (unsigned int bit = 1 << ((sizeof(unsigned int) * 8) - 1); bit > 0; bit = bit >> 1)
         {
-            if (number[i] & bit) printf("1");
-            else printf("0");
+            if (number[i] & bit) printf("!");
+            else printf(".");
         }
     }
 }

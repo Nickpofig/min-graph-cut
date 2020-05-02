@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern bool __logging_is_graph_cyclic;
-
 struct Edge 
 {
     int node_a;

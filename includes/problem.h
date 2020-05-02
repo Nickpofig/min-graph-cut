@@ -47,6 +47,7 @@ void deeply_copy_solution
     struct ProblemSolution* into 
 );
 
+void clear_problem_solution(struct ProblemSolution *solution);
 void print_problem_instance(const struct ProblemInstance* instance);
 void print_problem_solution(const struct ProblemSolution* solution);
 void minimally_print_problem_solution(const struct ProblemSolution* solution);

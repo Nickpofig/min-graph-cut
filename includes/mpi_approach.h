@@ -8,7 +8,7 @@
 struct ProblemSolution run_mpi_omp_iterative_brute_force
 (
     const struct ProblemInstance instance,
-    unsigned long iteration_size 
+    unsigned int iteration_size 
 );
 
 #endif // ends header guard

@@ -13,7 +13,12 @@
 			"omp.h": "c",
 			"problem.h": "c",
 			"stdlib.h": "c",
-			"bignumbers.h": "c"
+			"bignumbers.h": "c",
+			"stdbool.h": "c",
+			"algorithm": "c",
+			"fstream": "c",
+			"streambuf": "c",
+			"*.tcc": "c"
 		}
 	}
 }

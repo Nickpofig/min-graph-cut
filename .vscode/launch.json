@@ -66,6 +66,31 @@
             ],
             "preLaunchTask": "make openmp",
             "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "Debug MPI",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/builds/program",
+            "args": [
+                "${workspaceFolder}/sample-data/mhr_20_10_5.txt", 
+                "-np 1", 
+                "OMP_NUM_THREADS=1"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "make parallel",
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }

@@ -1,4 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "problem.h"
+#include "graph.h"
 
 struct ProblemInstance read_problem_instance_from(FILE *file) 
 {
@@ -270,6 +273,16 @@ void deeply_copy_solution
     for (int i = 0; i < from->size; i++) 
     {
         into->array[i] = from->array[i];
+    }
+}
+
+void clear_problem_solution(struct ProblemSolution *solution)
+{
+    solution->cost = -1;
+    solution->is_valid = false;
+    for (int i = 0; i < solution->size; i++) 
+    {
+        solution->array[i] = 0;
     }
 }
 
