@@ -5,5 +5,5 @@
 
 # folders
 
-/builds
-/objects
+builds/
+objects/
