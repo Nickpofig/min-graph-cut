@@ -1,18 +1,40 @@
+//#define __use_parallel_approach
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
 #include <omp.h>
+#ifdef __include_mpi
 #include <mpi.h>
+#endif
 
 #include "graph.h"
 #include "problem.h"
+#include "bignumbers.h"
 #include "depth_first_search.h"
 #include "gather_and_search_approach.h"
 #include "mpi_approach.h"
-#include "bignumbers.h"
+#include "sequential_approach.h"
 
+// declares main functions
 FILE* open_file(const char* file_path);
+
+#ifdef __include_mpi
+struct ProblemSolution find_solution_in_parallel
+(
+	int argc, char** args, 
+	struct ProblemInstance instance, 
+	unsigned int iteration_size
+);
+#endif
+
+struct ProblemSolution find_solution_sequentially
+(
+	struct ProblemInstance instance, 
+	unsigned int iteration_size
+);
+// ends declaration...
 
 
 int main(int argc, char** args)
@@ -30,6 +52,77 @@ int main(int argc, char** args)
         exit(-1);
     }
 
+	file = open_file(args[1]);
+
+	if (file == NULL) 
+	{
+		printf("Panic! filepath: \"%s\" is not correct", args[1]);
+		exit(-1);
+	}
+
+	instance = read_problem_instance_from(file);
+
+	clock_gettime(CLOCK_MONOTONIC, &start_time);
+
+	#ifdef __include_mpi
+	solution = find_solution_in_parallel(argc, args, instance, 10000000);
+	#else
+	solution = find_solution_sequentially(instance, 10000000);
+	#endif
+
+	clock_gettime(CLOCK_MONOTONIC, &end_time);
+
+	// outputs solution
+	printf("\ninstance { n: %d, a: %d, k: %d}", 
+		instance.n, 
+		instance.a, 
+		instance.k
+	);
+	printf("\nsolution { cut-cost: %f, solution: ", solution.cost);
+	for(int i = 0; i < solution.size; i++)
+	{
+		printf(" %d", solution.array[i]);
+	}
+	printf(" }");
+
+	double ellapsed = (end_time.tv_sec - start_time.tv_sec);
+		   ellapsed += (end_time.tv_nsec - start_time.tv_nsec) / 1000000000.0;
+
+	printf
+	(
+		"\nruntime: %f seconds.\n", ellapsed
+	);
+
+	free(solution.array);
+	free(instance.graph.edges);
+}
+
+FILE* open_file(const char* file_path)
+{
+	FILE* file;
+
+	file = fopen(file_path, "r");
+
+	// panics when file could not be open
+	if (file == NULL) 
+	{
+		printf("Panic: could not open file: %s", file_path);
+		exit(-1);
+	}
+
+	return file;
+}
+
+#ifdef __include_mpi
+struct ProblemSolution find_solution_in_parallel
+(
+	int argc, char** args, 
+	struct ProblemInstance instance,
+	unsigned int iteration_size
+)
+{
+	struct ProblemSolution solution;
+
 	MPI_Init(&argc, &args);
 
 	// gets process id and count
@@ -44,26 +137,12 @@ int main(int argc, char** args)
 		printf("number of processes: %d\n", process_count);
 	}
 
-	// MPI_Barrier(MPI_COMM_WORLD);
-
 #if defined(_OPENMP)
 	printf("[P:%d] number of available threads: %d\n", 
 		process_id, 
 		omp_get_max_threads()
 	);
 #endif
-
-	file = open_file(args[1]);
-
-	if (file == NULL) 
-	{
-		printf("Panic! filepath: \"%s\" is not correct", args[1]);
-		exit(-1);
-	}
-
-	instance = read_problem_instance_from(file);
-
-	clock_gettime(CLOCK_MONOTONIC, &start_time);
 
 	// * recursive OMP approach
 	// solution = run_recursive_depth_first_search(&instance);
@@ -72,7 +151,7 @@ int main(int argc, char** args)
 	// solution = search_best_solution_using_iterational_dps(instance, 4000);
 
 	// * mpi and omp approach
-	solution = run_mpi_omp_iterative_brute_force(instance, 10000000);
+	solution = run_mpi_omp_iterative_brute_force(instance, iteration_size);
 
 	// declares master's buffers to recieve data from slaves
 	int* solutions = process_id != 0 ? NULL : malloc(sizeof(int) * instance.n * process_count);
@@ -96,13 +175,13 @@ int main(int argc, char** args)
 		0, MPI_COMM_WORLD
 	);
 
-	// clears each slave process solution memory
+	// ends up connection with other processes
 	MPI_Finalize();
 
 	if (process_id != 0) 
 	{
 		free(solution.array);
-		return 0;
+		exit(0);
 	}
 
 	printf("mpi finilized...\n");
@@ -122,45 +201,14 @@ int main(int argc, char** args)
 	free(solutions);
 	free(costs);
 
-	clock_gettime(CLOCK_MONOTONIC, &end_time);
-
-	// outputs solution
-	printf("\ninstance { n: %d, a: %d, k: %d}", 
-		instance.n, 
-		instance.a, 
-		instance.k
-	);
-	printf("\nsolution { cut-cost: %f, solution: ", solution.cost);
-	for(int i = 0; i < solution.size; i++)
-	{
-		printf(" %d", solution.array[i]);
-	}
-	printf(" }");
-
-	double ellapsed = (end_time.tv_sec - start_time.tv_sec);
-		   ellapsed += (end_time.tv_nsec - start_time.tv_nsec) / 1000000000.0;
-
-	printf
-	(
-		"\nruntime: %f milliseconds.\n", ellapsed
-	);
-
-	free(solution.array);
-	free(instance.graph.edges);
+	return solution;
 }
+#endif
 
-FILE* open_file(const char* file_path)
+struct ProblemSolution find_solution_sequentially
+(
+	struct ProblemInstance instance, unsigned int iteration_size
+)
 {
-	FILE* file;
-
-	file = fopen(file_path, "r");
-
-	// panics when file could not be open
-	if (file == NULL) 
-	{
-		printf("Panic: could not open file: %s", file_path);
-		exit(-1);
-	}
-
-	return file;
+	return run_iterative_brute_force(instance, iteration_size);	
 }

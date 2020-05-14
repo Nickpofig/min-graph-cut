@@ -39,8 +39,11 @@ DEFINES :=
 .PHONY: all clean
 
 help:
-	@echo "available commands:\n * all\n * help\n * test-info\n * test_<any>\n * clean"
+	@echo "available commands:\n * sequential\n * help\n * parallel\n * test-info\n * test_<any>\n * clean"
 
+sequential: clean $(PROGRAM)
+
+parallel: DEFINES += -D__include_mpi
 parallel: CC := mpicc 
 parallel: CFLAGS += -fopenmp 
 parallel: clean $(PROGRAM)
@@ -52,10 +55,10 @@ test_%: $(filter-out %main.o,$(OBJECTS))
 	$(CC) $(INCLUDE) $(LDFLAGS) $^ $(TEST_DIRECTORY)/$@.c $(LDLIBS) -o $(BUILD_DIRECTORY)/$@
 
 $(PROGRAM): $(OBJECTS)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) $(CFLAGS) $(DEFINES) -o $@
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) $(CFLAGS) -o $@
 
 $(OBJECT_DIRECTORY)/%.o: $(SOURCE_DIRECTORY)/%.c $(INCLUDES) | $(OBJECT_DIRECTORY)
-	$(CC) $(INCLUDE) $(CFLAGS) -c $< -o $@
+	$(CC) $(INCLUDE) $(CFLAGS) $(DEFINES) -c $< -o $@
 
 $(OBJECT_DIRECTORY):
 	mkdir $@

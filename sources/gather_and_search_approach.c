@@ -1,5 +1,4 @@
 #include "gather_and_search_approach.h"
-#include <mpi.h>
 
 struct ProblemSolution search_best_solution_using_iterational_dps
 (
@@ -174,8 +173,13 @@ struct ProblemSolution* get_best_solution_from
     #pragma omp parallel for 
     for (int i = 0; i < space->index; i++) 
     {
-        int thread = omp_get_thread_num();
-        
+        int thread = 
+        #ifdef _OPENMP
+        omp_get_thread_num();
+        #else
+        0;
+        #endif
+
         calculate_cut_cost(&space->solutions[i], &space->instance);
 
         if (best_solutions[thread].is_valid == false || 
@@ -197,22 +201,21 @@ struct ProblemSolution* get_best_solution_from
         }
     }
 
-    #if defined(_OPENMP)
-        struct ProblemSolution* result_solution = malloc_solution(space->instance.n, NULL);
-        deeply_copy_solution(&best_solutions[0], result_solution);
+    struct ProblemSolution* result_solution = malloc_solution(space->instance.n, NULL);
+    deeply_copy_solution(&best_solutions[0], result_solution);
         
-        for (int i = 1; i < thread_count; i++) 
+    #ifdef _OPENMP
+    for (int i = 1; i < thread_count; i++) 
+    {
+        if (best_solutions[i].is_valid && 
+            best_solutions[i].cost < result_solution->cost) 
         {
-            if (best_solutions[i].is_valid && 
-                best_solutions[i].cost < result_solution->cost) 
-            {
-                deeply_copy_solution(&best_solutions[i], result_solution);
-            }
+            deeply_copy_solution(&best_solutions[i], result_solution);
         }
-        
-        free(best_solutions);
-        return result_solution;
-    #else
-        return best_solutions[0];
+    }
     #endif
+        
+    free(best_solutions);
+    
+    return result_solution;
 }

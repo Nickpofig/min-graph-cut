@@ -1,3 +1,5 @@
+#ifdef __include_mpi
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <mpi.h>
@@ -236,3 +238,5 @@ struct ProblemSolution run_mpi_omp_iterative_brute_force
 
     return best_solution;
 }
+
+#endif // close guard
