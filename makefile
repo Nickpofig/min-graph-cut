@@ -31,7 +31,7 @@ INCLUDES := $(wildcard $(INCLUDE_DIRECTORY)/*.h)
 TESTS := $(wildcard $(TEST_DIRECTORY)/%.c)
 
 INCLUDE := -I$(INCLUDE_DIRECTORY)
-CFLAGS  := -Wall
+CFLAGS  := -Wall -std=c99
 LDFLAGS := -Llib
 LDLIBS  := -lm
 DEFINES := 

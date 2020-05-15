@@ -41,8 +41,8 @@ int main(int argc, char** args)
 {
 	struct ProblemInstance instance;
 	struct ProblemSolution solution;
-	struct timespec start_time;
-	struct timespec end_time;
+	clock_t system_start_clock;
+	clock_t system_end_clock;
 	FILE* file;
 	
 	// panics when no filepath is given
@@ -62,7 +62,10 @@ int main(int argc, char** args)
 
 	instance = read_problem_instance_from(file);
 
-	clock_gettime(CLOCK_MONOTONIC, &start_time);
+	system_start_clock = clock();
+	#ifdef __include_mpi
+	double process_time = MPI_Wtime(); 
+	#endif
 
 	#ifdef __include_mpi
 	solution = find_solution_in_parallel(argc, args, instance, 10000000);
@@ -70,28 +73,31 @@ int main(int argc, char** args)
 	solution = find_solution_sequentially(instance, 10000000);
 	#endif
 
-	clock_gettime(CLOCK_MONOTONIC, &end_time);
+	system_end_clock = clock();
+	#ifdef __include_mpi
+	process_time = MPI_Wtime() - process_time;
+	#endif
 
 	// outputs solution
-	printf("\ninstance { n: %d, a: %d, k: %d}", 
+	printf("\ninstance { n: %d, a: %d, k: %d }", 
 		instance.n, 
 		instance.a, 
 		instance.k
 	);
-	printf("\nsolution { cut-cost: %f, solution: ", solution.cost);
+	printf("\nsolution { cut-cost: %f, split: ", solution.cost);
 	for(int i = 0; i < solution.size; i++)
 	{
 		printf(" %d", solution.array[i]);
 	}
 	printf(" }");
 
-	double ellapsed = (end_time.tv_sec - start_time.tv_sec);
-		   ellapsed += (end_time.tv_nsec - start_time.tv_nsec) / 1000000000.0;
+	double ellapsed_seconds = (double) (system_end_clock - system_start_clock) / CLOCKS_PER_SEC; 
 
-	printf
-	(
-		"\nruntime: %f seconds.\n", ellapsed
-	);
+	#ifdef __include_mpi
+	printf("\nsystem time: %f seconds.\nreal time: %f seconds.\n", ellapsed_seconds, process_time);
+	#else
+	printf("\nreal time: %f seconds.\n", ellapsed_seconds);
+	#endif
 
 	free(solution.array);
 	free(instance.graph.edges);
