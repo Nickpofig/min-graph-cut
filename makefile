@@ -41,7 +41,8 @@ DEFINES :=
 help:
 	@echo "available commands:\n * sequential\n * help\n * parallel\n * test-info\n * test_<any>\n * clean"
 
-sequential: clean $(PROGRAM)
+sequential:
+	$(CC) $(LDFLAGS) $(LDLIBS) $(INCLUDE) $(CFLAGS) $(DEFINES) $(SOURCES) -o $(BUILD_DIRECTORY)/sequential
 
 parallel: DEFINES += -D__include_mpi
 parallel: CC := mpicc 

@@ -115,6 +115,12 @@ struct ProblemInstance read_problem_instance_from(FILE *file)
         );
     }
 
+    if (is_graph_cyclic(&instance.graph) == false) 
+    {
+        printf("Panic: input graph is not cyclic!\n");
+        exit(-1);
+    }
+
     return instance;
 }
 

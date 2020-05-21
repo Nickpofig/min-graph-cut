@@ -229,9 +229,12 @@ struct ProblemSolution run_mpi_omp_iterative_brute_force
         }
     }
 
-    printf("[P:%d] result: ", process_id);
-    print_problem_solution(&best_solution);
-    printf("\n");
+    printf("[process:%d] result: %f [", process_id, best_solution.cost);
+    for (int i = 0; i < best_solution.size; i++)
+    {
+        printf(" %d", best_solution.array[i]);
+    }
+    printf(" ]\n");
 
     free(start_state);
     free(end_state);

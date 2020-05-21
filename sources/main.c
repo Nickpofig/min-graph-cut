@@ -44,19 +44,19 @@ int main(int argc, char** args)
 	clock_t system_start_clock;
 	clock_t system_end_clock;
 	FILE* file;
-	
+
 	// panics when no filepath is given
 	if (argc == 1) 
 	{
-        printf("Panic! expects filepath as second argument.\n");
-        exit(-1);
-    }
+        	printf("Panic! expects filepath as second argument.\n");
+        	exit(-1);
+    	}
 
 	file = open_file(args[1]);
 
 	if (file == NULL) 
 	{
-		printf("Panic! filepath: \"%s\" is not correct", args[1]);
+		printf("Panic! filepath: \"%s\" is not correct\n", args[1]);
 		exit(-1);
 	}
 
@@ -78,27 +78,21 @@ int main(int argc, char** args)
 	process_time = MPI_Wtime() - process_time;
 	#endif
 
-	// outputs solution
-	printf("\ninstance { n: %d, a: %d, k: %d }", 
-		instance.n, 
-		instance.a, 
-		instance.k
-	);
-	printf("\nsolution { cut-cost: %f, split: ", solution.cost);
+	printf("result: %f [", solution.cost);
 	for(int i = 0; i < solution.size; i++)
 	{
 		printf(" %d", solution.array[i]);
 	}
-	printf(" }");
+	printf("]\n");
 
 	double ellapsed_seconds = (double) (system_end_clock - system_start_clock) / CLOCKS_PER_SEC; 
 
 	#ifdef __include_mpi
-	printf("\nsystem time: %f seconds.\nreal time: %f seconds.\n", ellapsed_seconds, process_time);
+	printf("system time: %f seconds.\nreal time: %f seconds.\n", ellapsed_seconds, process_time);
 	#else
-	printf("\nreal time: %f seconds.\n", ellapsed_seconds);
+	printf("real time: %f seconds.\n", ellapsed_seconds);
 	#endif
-
+	
 	free(solution.array);
 	free(instance.graph.edges);
 }
@@ -139,12 +133,11 @@ struct ProblemSolution find_solution_in_parallel
 	
 	if (process_id == 0) 
 	{
-		printf("mpi initialized...\n");
-		printf("number of processes: %d\n", process_count);
+		printf("[case n:%d, k:%d, a:%d]\n[mpi processes: %d]\n", instance.n, instance.k, instance.a, process_count);
 	}
 
 #if defined(_OPENMP)
-	printf("[P:%d] number of available threads: %d\n", 
+	printf("[process(%d) threads: %d]\n", 
 		process_id, 
 		omp_get_max_threads()
 	);
@@ -189,8 +182,6 @@ struct ProblemSolution find_solution_in_parallel
 		free(solution.array);
 		exit(0);
 	}
-
-	printf("mpi finilized...\n");
 
 	for (int i = 0; i < process_count; i++) 
 	{
