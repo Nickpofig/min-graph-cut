@@ -11,7 +11,7 @@
 #
 # 					----[ DEBUGGING ]----
 # to use gdb gcc debugging tool withing visual studio code
-# you should to specify <make command> with "-g" compiler option
+# you should specify <make command> with "-g" compiler option
 # and compile <sources> including <headers> into appropriate <binary>
 # after that just create <debug configuration> in the launch.json
 # with <task> in the task.json that call this appropriate <make command>
